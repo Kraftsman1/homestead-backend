@@ -2,105 +2,110 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\UserSignUpRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
 
     /**
-     * Create User
-     * 
-     * @param [string] firstname
-     * @param [string] lastname
-     * @param [string] email
-     * @param [string] password
-     * @param [string] password_confirmation
-     * @param [string] role
-     * @return [string] message
+     * Create User Account.
+     *
+     * @param UserSignUpRequest $request Validated user signup data.
+     *
+     * @return JsonResponse
+     *
+     * @throws JsonValidationException If validation fails.
      */
 
-    public function signup(Request $request)
+    public function signup(UserSignUpRequest $request)
     {
-        $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'password_confirmation' => 'required|same:password',
-            'role' => 'required|string|in:admin,customer'
-        ]);
+        try {
+            $validated = $request->validated();
 
-        $user = new User([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role
-        ]);
+            // Check if existing user with same email
+            if (User::where('email', $validated['email'])->exists()) {
+                return response()->json([
+                    'message' => 'User with this email already exists!',
+                ], 409);
+            }
 
-        if($user->save()){
-            $token = $user->createToken('Personal Access Token')->plainTextToken;
+            // Hash password before creating user
+            $validated['password'] = Hash::make($validated['password']);
 
+            // Create user with the validated data
+            $user = User::create($validated);
+
+            if ($user) {
+                $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+                // Determine and include user role if logic exists
+                $role = isset($user->role) ? $user->role : null;
+
+                return response()->json([
+                    'message' => 'Your account has been created successfully!',
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'role' => $role,
+                ], 201);
+            } else {
+                return response()->json([
+                    'error' => 'An unexpected error occurred while creating your account. Please try again later.',
+                ], 500);
+            }
+        } catch (ValidationException $e) {
             return response()->json([
-                'message' => 'Successfully created user!',
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'role' => $user->role
-            ], 201);
-        }
-        else{
-            return response()->json([
-                'message' => 'Error creating user!'
-            ], 401);
+                'message' => 'Please correct the following errors:',
+                'errors' => $e->errors(),
+            ], 422);
         }
     }
 
     /**
      * Login User
-     * 
-     * @param [string] email
-     * @param [string] password
-     * @param [boolean] remember_me
-     * @return [string] access_token
-     * @return [string] token_type
-     * @return [string] role
+     *
+     * @param UserLoginRequest $request Validated user login data.
+     *
+     * @return JsonResponse
+     *
+     * @throws JsonValidationException If validation fails.
      */
-    public function login(Request $request) {
-
-        $request->validate([
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
-            'remember_me' => 'boolean'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if($user){
-            if(Hash::check($request->password, $user->password)){
-                $token = $user->createToken('Personal Access Token')->plainTextToken;
-
+    public function login(UserLoginRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+    
+            // Fetch user by email
+            $user = User::where('email', $validated['email'])->first();
+    
+            if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json([
-                    'message' => 'Successfully logged in!',
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                    'role' => $user->role
-                ], 201);
-            }
-            else{
-                return response()->json([
-                    'message' => 'Invalid User Credentials!'
+                    'message' => 'Invalid email or password.',
                 ], 401);
             }
-        }
-        else{
-            return response()->json([
-                'message' => 'User with these credentials does not exist!'
-            ], 401);
-        }
+    
+            // Generate and return token with optional user information
+            $token = $user->createToken('Personal Access Token')->plainTextToken;
+    
+            $response = [
+                'message' => 'Successfully logged in!',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'role' => $user->role,
+            ];
+    
+            return response()->json($response, 201);
 
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Please correct the following errors:',
+                'errors' => $e->errors(),
+            ], 422);
+        }
     }
     
 }
