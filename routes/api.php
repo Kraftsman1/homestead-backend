@@ -3,7 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Middleware\JSONResponse;
 // use App\Http\Controllers\API\UserController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +32,9 @@ Route::prefix('v1')->group(function () {
 
     // Authentication Routes
     Route::group([
-        'prefix' => 'auth'
+        'prefix' => 'auth',
+        // middleware
+        'middleware' => [JSONResponse::class]
     ], function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('signup', [AuthController::class, 'signup']);
@@ -43,20 +48,20 @@ Route::prefix('v1')->group(function () {
 
     });
 
-    // Admin Routes
-    Route::group([
-        'middleware' => ['auth:sanctum', 'role:admin'],
-        'prefix' => 'admin'
-    ], function() {
-        // Add your admin routes here
-    });
+    // // Admin Routes
+    // Route::group([
+    //     'middleware' => ['auth:sanctum', 'role:admin'],
+    //     'prefix' => 'admin'
+    // ], function() {
+    //     // Add your admin routes here
+    // });
     
-    // Customer Routes
-    Route::group([
-        'middleware' => ['auth:sanctum', 'role:customer'],
-        'prefix' => 'customer'
-    ], function() {
-        // Add your customer routes here
-    });
+    // // Customer Routes
+    // Route::group([
+    //     'middleware' => ['auth:sanctum', 'role:customer'],
+    //     'prefix' => 'customer'
+    // ], function() {
+    //     // Add your customer routes here
+    // });
 
 });
