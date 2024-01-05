@@ -1,5 +1,17 @@
 # Changelog
 
+## 2024-01-05
+
+### Added
+
+- Get Destinations endpoint
+- Search filter
+- Paginated records
+
+### Fixed
+
+- Destination model relations
+
 ## 2023-12-18
 
 ### Added

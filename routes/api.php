@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\DestinationController;
 use App\Http\Middleware\JSONResponse;
 // use App\Http\Controllers\API\UserController;
 
@@ -46,6 +47,19 @@ Route::prefix('v1')->group(function () {
             Route::get('user', [AuthController::class, 'user']);
         });
 
+    });
+
+    // Destinations Routes
+    Route::group([
+        'prefix' => 'destinations',
+        // middleware
+        'middleware' => [JSONResponse::class]
+    ], function () {
+        Route::get('/', [DestinationController::class, 'index']);
+        Route::get('/{id}', [DestinationController::class, 'show']);
+        // Route::post('/', [DestinationController::class, 'store']);
+        // Route::put('/{id}', [DestinationController::class, 'update']);
+        // Route::delete('/{id}', [DestinationController::class, 'destroy']);
     });
 
     // // Admin Routes
