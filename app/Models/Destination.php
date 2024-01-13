@@ -86,10 +86,10 @@ class Destination extends Model
      * Get the amenities for the destination.
      */
 
-    // public function amenities()
-    // {
-    //     return $this->belongsToMany(Amenities::class);
-    // }
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'destination_amenities');
+    }
 
     public function markAsFeatured()
     {

@@ -88,7 +88,7 @@ class DestinationController extends Controller
     public function show($id)
     {
         try {
-            $destination = Destination::with('city', 'region', 'country', 'properties', 'images')->findOrFail($id);
+            $destination = Destination::with('city', 'region', 'country', 'properties', 'images', 'amenities')->findOrFail($id);
 
             // If no destination is found, return 404 directly
             if (!$destination) {
