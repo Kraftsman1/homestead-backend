@@ -31,13 +31,11 @@ class Property extends Model
         'price',
         'bedrooms',
         'bathrooms',
-        'amenities',
         'address',
         'city_id',
         'region_id',
         'country_id',
         'destination_id',
-        'image_url',
         'latitude',
         'longitude',
 

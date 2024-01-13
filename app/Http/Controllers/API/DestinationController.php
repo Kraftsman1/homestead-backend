@@ -3,37 +3,61 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GetDestinationsRequest;
 use App\Models\Destination;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class DestinationController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Get all destinations.
+     *
+     * @param GetDestinationsRequest $request Validated request data.
+     *
+     * @return JsonResponse
+     *
+     * @throws JsonValidationException If validation fails.
+     */
+    public function index(GetDestinationsRequest $request)
     {
         try {
-            $this->validate($request, [
-                'region' => 'nullable|string',
-                'country' => 'nullable|string',
-                'page' => 'nullable|numeric|min:1',
-            ]);
-
+            // Create query builder
             $query = Destination::query();
-
-            // Apply filters based on validated query parameters
-            if ($request->has('region')) {
-                $query->where('region', $request->region);
+    
+            // Apply filters using relationships and foreign keys
+            if ($request->has('city_id')) {
+                $query->whereHas('city', function ($query) use ($request) {
+                    $query->where('id', $request->city_id);
+                });
             }
-            if ($request->has('country')) {
-                $query->where('country', $request->country);
+            if ($request->has('region_id')) {
+                $query->whereHas('region', function ($query) use ($request) {
+                    $query->where('id', $request->region_id);
+                });
+            }
+            if ($request->has('country_id')) {
+                $query->whereHas('country', function ($query) use ($request) {
+                    $query->where('id', $request->country_id);
+                });
+            }
+
+            // Eager load relationships for efficiency
+            $query->with('city', 'region', 'country');
+
+            // If no destinations are found, return 404 directly
+            if ($query->count() === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No destinations found.',
+                ], 404);
             }
 
             // Paginate results
-            $perPage = 5; // Adjust page size as needed
+            $perPage = $request->query('per_page', 5);
             $currentPage = $request->query('page', 1);
 
-            $destinations = $query->paginate($perPage, ['*'], 'page', $currentPage);
+            $destinations = $query->paginate($perPage, ['id', 'name', 'description', 'city_id', 'region_id', 'country_id'], 'page', $currentPage);
 
             return response()->json([
                 'success' => true,
@@ -54,4 +78,39 @@ class DestinationController extends Controller
         }
     }
 
+    /**
+     * Get a destination by ID.
+     *
+     * @param int $id The destination ID.
+     *
+     * @return JsonResponse
+     */
+    public function show($id)
+    {
+        try {
+            $destination = Destination::with('city', 'region', 'country', 'properties', 'images')->findOrFail($id);
+
+            // If no destination is found, return 404 directly
+            if (!$destination) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Destination not found.',
+                ], 404);
+            }
+
+            // Return destination
+            return response()->json([
+                'success' => true,
+                'message' => 'Destination retrieved successfully.',
+                'data' => $destination,
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error($e);
+            return response()->json([
+                'message' => 'Internal server error',
+            ], 500);
+        }
+    }
+    
 }

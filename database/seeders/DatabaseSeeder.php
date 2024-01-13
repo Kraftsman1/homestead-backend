@@ -40,6 +40,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Seeding: Destination Images Table');
         $this->call(DestinationImagesTableSeeder::class);
 
+        $this->command->info('Seeding: Properties Table');
+        $this->call(PropertiesTableSeeder::class);
+
+        $this->command->info('Seeding: Property Images Table');
+        $this->call(PropertyImagesTableSeeder::class);
+
         $end = Carbon::now();
 
         $this->command->info('Seeding completed in ' . $start->diffInSeconds($end) . ' seconds.');

@@ -33,11 +33,7 @@ class DestinationsTableSeeder extends Seeder
 
                 // assign country_id to 1
                 'country_id' => 1,
-
                 'zip_code' => $faker->postcode,
-
-                // assign an image id between 1 and 10
-                'image_url' => $faker->numberBetween(1, 10),
             ]);
         }
         

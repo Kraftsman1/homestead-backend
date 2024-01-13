@@ -21,13 +21,11 @@ class CreatePropertiesTable extends Migration
             $table -> integer('price');
             $table -> integer('bedrooms');
             $table -> integer('bathrooms');
-            $table -> string('amenities');
             $table -> string('address');
             $table -> foreignId('city_id') -> constrained('cities');
             $table -> foreignId('region_id') -> constrained('regions');
             $table -> foreignId('country_id') -> constrained('countries');
             $table -> foreignId('destination_id') -> constrained('destinations');
-            $table -> string('image_url');
             $table -> string('latitude');
             $table -> string('longitude');
             $table->timestamps();

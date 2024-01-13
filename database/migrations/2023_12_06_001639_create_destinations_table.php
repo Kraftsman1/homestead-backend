@@ -17,12 +17,15 @@ class CreateDestinationsTable extends Migration
             $table->id();
             $table -> string('name');
             $table -> string('description');
-            $table -> foreignId('city_id') -> constrained('cities');
-            $table -> foreignId('region_id') -> constrained('regions');
-            $table -> foreignId('country_id') -> constrained('countries');
+            $table -> unsignedBigInteger('city_id')->nullable();
+            $table -> foreign('city_id')->references('id')->on('cities');
+            $table -> unsignedBigInteger('region_id')->nullable();
+            $table -> foreign('region_id')->references('id')->on('regions');
+            $table -> unsignedBigInteger('country_id')->nullable();
+            $table -> foreign('country_id')->references('id')->on('countries');
             $table -> string('zip_code');
-            $table -> string('image_url');
-            $table->timestamps();
+            $table -> timestamps();
+            $table -> timestamp('deleted_at')->nullable();
         });
     }
 

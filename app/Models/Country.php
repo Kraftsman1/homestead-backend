@@ -42,4 +42,13 @@ class Country extends Model
         return $this->hasMany(Region::class);
     }
 
+    /**
+     * Get the cities for the country.
+     */
+
+    public function cities()
+    {
+        return $this->hasMany(City::class);
+    }
+
 }

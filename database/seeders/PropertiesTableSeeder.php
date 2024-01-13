@@ -30,13 +30,11 @@ class PropertiesTableSeeder extends Seeder
                 'price' => $faker->numberBetween(100, 1000),
                 'bedrooms' => $faker->numberBetween(1, 5),
                 'bathrooms' => $faker->numberBetween(1, 5),
-                'amenities' => $faker->randomElement(['wifi', 'pool', 'gym', 'parking']),
                 'address' => $faker->address,
                 'city_id' => $faker->numberBetween(1, 10),
                 'region_id' => 1,
                 'country_id' => 1,
                 'destination_id' => $faker->numberBetween(1, 10),
-                'image_url' => $faker->imageUrl(640, 480, 'city', true),
                 'latitude' => $faker->latitude,
                 'longitude' => $faker->longitude,
             ]);
