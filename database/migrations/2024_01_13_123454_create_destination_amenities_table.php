@@ -17,6 +17,7 @@ class CreateDestinationAmenitiesTable extends Migration
             $table->id();
             $table->unsignedInteger('destination_id');
             $table->unsignedInteger('amenity_id');
+            $table->timestamps();
         });
 
     }

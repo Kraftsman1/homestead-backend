@@ -57,6 +57,9 @@ Route::prefix('v1')->group(function () {
     ], function () {
         Route::get('/', [DestinationController::class, 'index']);
         Route::get('/{id}', [DestinationController::class, 'show']);
+        Route::post('/{id}/favorite', [DestinationController::class, 'favorite'])->middleware('auth:sanctum');
+
+
         // Route::post('/', [DestinationController::class, 'store']);
         // Route::put('/{id}', [DestinationController::class, 'update']);
         // Route::delete('/{id}', [DestinationController::class, 'destroy']);

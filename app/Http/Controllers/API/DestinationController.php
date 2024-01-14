@@ -7,6 +7,7 @@ use App\Http\Requests\GetDestinationsRequest;
 use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class DestinationController extends Controller
 {
@@ -24,7 +25,7 @@ class DestinationController extends Controller
         try {
             // Create query builder
             $query = Destination::query();
-    
+
             // Apply filters using relationships and foreign keys
             if ($request->has('city_id')) {
                 $query->whereHas('city', function ($query) use ($request) {
@@ -112,5 +113,65 @@ class DestinationController extends Controller
             ], 500);
         }
     }
-    
+
+    /**
+     * Favorite or unfavorite a destination.
+     *
+     * @param Request $request The request object.
+     * @param int $id The destination ID.
+     *
+     * @return JsonResponse
+     */
+    public function favorite(Request $request, $id)
+    {
+        try {
+            // Get Authenticated user
+            $user = Auth::user();
+
+            // Get destination
+            $destination = Destination::findOrFail($id);
+
+            // Get the 'favorited' flag from the request
+            $isFavorited = $request->get('favorited') ?? false;
+
+            if ($isFavorited) {
+                // Favorite the destination
+                if (!$user->favorites->contains($destination)) {
+                    $user->favorites()->attach($destination);
+                }
+                $message = 'Destination favorited.';
+            } else {
+                // Unfavorite the destination
+                if ($user->favorites->contains($destination)) {
+                    $user->favorites()->detach($destination);
+                }
+                $message = 'Destination unfavorited.';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => [
+                    'id' => $destination->id,
+                    // Update favorite status response
+                    'favorited' => $isFavorited,
+                ],
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Destination not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            // Log error for debugging
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An unexpected error occured. Please try again later.',
+            ], 500);
+        }
+    }
+
 }

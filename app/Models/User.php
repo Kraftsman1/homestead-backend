@@ -43,4 +43,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+    /**
+     * Get favorite destinations of user
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Destination::class, 'favorites', 'user_id', 'destination_id');
+    }
+
 }

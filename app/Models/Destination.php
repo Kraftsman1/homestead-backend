@@ -97,4 +97,9 @@ class Destination extends Model
         $this->save();
     }
 
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'destination_id', 'user_id');
+    }
+
 }
