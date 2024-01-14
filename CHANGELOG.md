@@ -7,6 +7,9 @@
 - Get Destinations endpoint
 - Search filter
 - Paginated records
+- Destination Amenities
+- Favorite/Unfavorite a Destination
+- Get all User Favorites
 
 ### Fixed
 
