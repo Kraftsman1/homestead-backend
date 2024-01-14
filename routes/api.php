@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DestinationController;
+use App\Http\Controllers\API\UserController;
+
 use App\Http\Middleware\JSONResponse;
-// use App\Http\Controllers\API\UserController;
 
 
 
@@ -73,12 +74,13 @@ Route::prefix('v1')->group(function () {
     //     // Add your admin routes here
     // });
     
-    // // Customer Routes
-    // Route::group([
-    //     'middleware' => ['auth:sanctum', 'role:customer'],
-    //     'prefix' => 'customer'
-    // ], function() {
-    //     // Add your customer routes here
-    // });
+    // Customer Routes
+    Route::group([
+        'middleware' => ['auth:sanctum'],
+        'prefix' => 'user'
+    ], function() {
+        // Add your customer routes here
+        Route::get('/favorites', [UserController::class, 'favorites']);
+    });
 
 });
