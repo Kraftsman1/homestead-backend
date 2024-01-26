@@ -7,6 +7,7 @@ use App\Http\Controllers\API\DestinationController;
 use App\Http\Controllers\API\UserController;
 
 use App\Http\Middleware\JSONResponse;
+use App\Http\Middleware\HandleCors;
 
 
 
@@ -25,7 +26,9 @@ use App\Http\Middleware\JSONResponse;
 //     return $request->user();
 // });
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->group([
+    'middleware' => ['handleCors']
+],function () {
 
     // welcome route
     Route::get('/welcome', function () {
