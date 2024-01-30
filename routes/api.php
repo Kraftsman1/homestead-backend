@@ -26,9 +26,7 @@ use App\Http\Middleware\HandleCors;
 //     return $request->user();
 // });
 
-Route::prefix('v1')->group([
-    'middleware' => ['handleCors']
-],function () {
+Route::prefix('v1')->group(function () {
 
     // welcome route
     Route::get('/welcome', function () {
