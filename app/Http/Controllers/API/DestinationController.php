@@ -23,11 +23,13 @@ class DestinationController extends Controller
     public function index(GetDestinationsRequest $request)
     {
         try {
+
             $validated = $request->validated();
-    
+
+
             // Create query builder
             $query = Destination::query();
-    
+
             // Apply filters using relationships and foreign keys
             if (isset($validated['city_id']) && $validated['city_id']) {
                 $query->whereHas('city', function ($query) use ($validated) {
@@ -44,10 +46,10 @@ class DestinationController extends Controller
                     $query->where('id', $validated['country_id']);
                 });
             }
-    
+
             // Eager load relationships for efficiency
             $query->with('city', 'region', 'country');
-    
+
             // If no destinations are found, return 404 directly
             if ($query->count() === 0) {
                 return response()->json([
@@ -55,19 +57,19 @@ class DestinationController extends Controller
                     'message' => 'No destinations found.',
                 ], 404);
             }
-    
+
             // Paginate results from validated data
             $perPage = $validated['per_page'] ?? 10;
             $currentPage = $validated['page'] ?? 1;
-    
+
             $destinations = $query->paginate($perPage, ['id', 'name', 'description', 'city_id', 'region_id', 'country_id'], 'page', $currentPage);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'All destinations retrieved successfully.',
                 'data' => $destinations,
             ], 200);
-    
+
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Invalid query parameters',

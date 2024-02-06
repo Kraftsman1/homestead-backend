@@ -57,7 +57,7 @@ Route::prefix('v1')->group(function () {
         // middleware
         'middleware' => [JSONResponse::class]
     ], function () {
-        Route::get('/', [DestinationController::class, 'index']);
+        Route::post('/', [DestinationController::class, 'index']);
         Route::get('/{id}', [DestinationController::class, 'show']);
         Route::post('/{id}/favorite', [DestinationController::class, 'favorite'])->middleware('auth:sanctum');
 
