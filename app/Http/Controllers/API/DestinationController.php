@@ -8,6 +8,7 @@ use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class DestinationController extends Controller
 {
@@ -138,20 +139,22 @@ class DestinationController extends Controller
             $destination = Destination::findOrFail($id);
 
             // Get the 'favorited' flag from the request
-            $isFavorited = $request->get('favorited') ?? false;
+            $isFavorited = $request->boolean('favorited') ?? false;
+
+            // dd($isFavorited);
 
             if ($isFavorited) {
                 // Favorite the destination
                 if (!$user->favorites->contains($destination)) {
                     $user->favorites()->attach($destination);
                 }
-                $message = 'Destination favorited.';
+                $message = 'Destination favorited successfully.';
             } else {
                 // Unfavorite the destination
                 if ($user->favorites->contains($destination)) {
                     $user->favorites()->detach($destination);
                 }
-                $message = 'Destination unfavorited.';
+                $message = 'Destination unfavorited successfully.';
             }
 
             return response()->json([
