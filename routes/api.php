@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DestinationController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\HomeController;
 
 use App\Http\Middleware\JSONResponse;
 use App\Http\Middleware\HandleCors;
@@ -32,6 +33,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/welcome', function () {
         return response()->json(['message' => 'Welcome to the API!']);
     });
+    
+    Route::get('search', [HomeController::class, 'search']);
 
     // Authentication Routes
     Route::group([
@@ -50,6 +53,11 @@ Route::prefix('v1')->group(function () {
         });
 
     });
+
+    // Home Route Group
+    // Route::group(function () {
+    //     Route::get('search', [HomeController::class, 'search']);
+    // });
 
     // Destinations Routes
     Route::group([
