@@ -1,5 +1,21 @@
 # Changelog
 
+## 2024-02-13
+
+### Added
+
+- Added a search suggestions endpoint to return matches based on keywords to the frontend
+- Added Home controller to handle all future endpoints for the homepage
+- Added Search filter to filter destinations by city, region or country. More filters can be added as needed
+
+## Removed
+
+- Search filter from destinations endpoint.
+
+## Fixed
+
+- Query parameters for web and json body for mobile
+
 ## 2024-01-05
 
 ### Added

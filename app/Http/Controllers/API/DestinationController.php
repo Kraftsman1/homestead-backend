@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GetDestinationsRequest;
 use App\Models\Destination;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -19,34 +17,12 @@ class DestinationController extends Controller
      *
      * @return JsonResponse
      *
-     * @throws JsonValidationException If validation fails.
      */
-    public function index(GetDestinationsRequest $request)
+    public function index(Request $request)
     {
         try {
-
-            $validated = $request->validated();
-
-
             // Create query builder
             $query = Destination::query();
-
-            // Apply filters using relationships and foreign keys
-            if (isset($validated['city_id']) && $validated['city_id']) {
-                $query->whereHas('city', function ($query) use ($validated) {
-                    $query->where('id', $validated['city_id']);
-                });
-            }
-            if (isset($validated['region_id']) && $validated['region_id']) {
-                $query->whereHas('region', function ($query) use ($validated) {
-                    $query->where('id', $validated['region_id']);
-                });
-            }
-            if (isset($validated['country_id']) && $validated['country_id']) {
-                $query->whereHas('country', function ($query) use ($validated) {
-                    $query->where('id', $validated['country_id']);
-                });
-            }
 
             // Eager load relationships for efficiency
             $query->with('city', 'region', 'country');
@@ -60,22 +36,16 @@ class DestinationController extends Controller
             }
 
             // Paginate results from validated data
-            $perPage = $validated['per_page'] ?? 10;
-            $currentPage = $validated['page'] ?? 1;
+            $limit = $request->query('limit') ?? 10;
+            $currentPage = $request->query('page') ?? 1;
 
-            $destinations = $query->paginate($perPage, ['id', 'name', 'description', 'city_id', 'region_id', 'country_id'], 'page', $currentPage);
+            $destinations = $query->paginate($limit, ['id', 'name', 'description', 'city_id', 'region_id', 'country_id'], 'page', $currentPage);
 
             return response()->json([
                 'success' => true,
                 'message' => 'All destinations retrieved successfully.',
                 'data' => $destinations,
             ], 200);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Invalid query parameters',
-                'errors' => $e->errors(),
-            ], 400);
         } catch (Exception $e) {
             Log::error($e);
             return response()->json([
@@ -83,8 +53,6 @@ class DestinationController extends Controller
             ], 500);
         }
     }
-    
-    
 
     /**
      * Get a destination by ID.
@@ -96,15 +64,16 @@ class DestinationController extends Controller
     public function show($id)
     {
         try {
-            $destination = Destination::with('city', 'region', 'country', 'properties', 'images', 'amenities')->findOrFail($id);
 
             // If no destination is found, return 404 directly
-            if (!$destination) {
+            if (!Destination::where('id', $id)->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Destination not found.',
+                    'message' => 'Destination does not exist.',
                 ], 404);
             }
+
+            $destination = Destination::with('city', 'region', 'country', 'properties', 'images', 'amenities')->findOrFail($id);
 
             // Return destination
             return response()->json([
@@ -141,8 +110,6 @@ class DestinationController extends Controller
             // Get the 'favorited' flag from the request
             $isFavorited = $request->boolean('favorited') ?? false;
 
-            // dd($isFavorited);
-
             if ($isFavorited) {
                 // Favorite the destination
                 if (!$user->favorites->contains($destination)) {
@@ -175,7 +142,6 @@ class DestinationController extends Controller
         } catch (\Exception $e) {
             // Log error for debugging
             Log::error($e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occured. Please try again later.',
