@@ -20,8 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'firstname',
         'lastname',
+        'username',
         'email',
         'password',
+        'gender',
+        // 'ip_address',
         'role',
     ];
 
@@ -43,6 +46,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Set user profile image
+     */
+    public function profileImage()
+    {
+        return $this->hasOne(ProfileImage::class);
+    }
     
     /**
      * Get favorite destinations of user

@@ -29,7 +29,7 @@ class UserSignUpRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'password_confirmation' => 'required|same:password',
-            'role' => 'required|string|in:admin,customer'
+            'role' => 'required|string|in:admin,user'
         ];
     }
 

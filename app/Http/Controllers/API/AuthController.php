@@ -8,6 +8,7 @@ use App\Http\Requests\UserSignUpRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Events\UserCreated;
 
 class AuthController extends Controller
 {
@@ -39,6 +40,9 @@ class AuthController extends Controller
 
             // Create user with the validated data
             $user = User::create($validated);
+
+            // Fire event to create user attributes
+            event(new UserCreated($user));
 
             if ($user) {
                 $token = $user->createToken('Personal Access Token')->plainTextToken;
@@ -96,9 +100,15 @@ class AuthController extends Controller
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'role' => $user->role,
+                'user' => [
+                    'id' => $user->id,
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'email' => $user->email,
+                ]
             ];
     
-            return response()->json($response, 201);
+            return response()->json($response, 200);
 
         } catch (ValidationException $e) {
             return response()->json([
