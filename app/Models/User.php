@@ -50,9 +50,9 @@ class User extends Authenticatable
     /**
      * Set user profile image
      */
-    public function profileImage()
+    public function profilePicture()
     {
-        return $this->hasOne(ProfileImage::class);
+        return $this->hasOne(ProfilePicture::class);
     }
     
     /**

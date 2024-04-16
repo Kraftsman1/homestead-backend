@@ -79,12 +79,16 @@ Route::prefix('v1')->group(function () {
     //     // Add your admin routes here
     // });
     
-    // Customer Routes
+    // User Routes
     Route::group([
         'middleware' => ['auth:sanctum'],
         'prefix' => 'user'
     ], function() {
-        // Add your customer routes here
+        // Add user routes here
+        Route::get('/', [UserController::class, 'index']);
+        Route::put('/profile', [UserController::class, 'update']);
+        Route::post('/profile-picture', [UserController::class, 'update_profile_picture']);
+        Route::post('/change-password', [UserController::class, 'change_password']);
         Route::get('/favorites', [UserController::class, 'favorites']);
     });
 
