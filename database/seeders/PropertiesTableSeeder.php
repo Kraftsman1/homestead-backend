@@ -26,15 +26,15 @@ class PropertiesTableSeeder extends Seeder
             Property::create([
                 'name' => $faker->name,
                 'description' => $faker->paragraph(2),
-                'type' => $faker->randomElement(['hotel', 'apartment', 'hostel', 'guest house']),
+                'property_type' => $faker->randomElement(['hotel', 'apartment', 'hostel', 'guest house']),
                 'price' => $faker->numberBetween(100, 1000),
                 'bedrooms' => $faker->numberBetween(1, 5),
                 'bathrooms' => $faker->numberBetween(1, 5),
+                'max_guests' => $faker->numberBetween(1, 10),
                 'address' => $faker->address,
                 'city_id' => $faker->numberBetween(1, 10),
                 'region_id' => 1,
                 'country_id' => 1,
-                'destination_id' => $faker->numberBetween(1, 10),
                 'latitude' => $faker->latitude,
                 'longitude' => $faker->longitude,
             ]);

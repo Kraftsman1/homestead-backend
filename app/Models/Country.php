@@ -28,9 +28,14 @@ class Country extends Model
         'code', 
     ];
 
-    public function destinations()
+    // public function destinations()
+    // {
+    //     return $this->hasMany(Destination::class);
+    // }
+
+    public function properties()
     {
-        return $this->hasMany(Destination::class);
+        return $this->hasMany(Property::class);
     }
 
     /**

@@ -36,21 +36,21 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Seeding: Destinations Table');
         $this->call(DestinationsTableSeeder::class);
-        
-        $this->command->info('Seeding: Destination Images Table');
-        $this->call(DestinationImagesTableSeeder::class);
 
         $this->command->info('Seeding: Amenities Table');
         $this->call(AmenitiesTableSeeder::class);
-
-        $this->command->info('Seeding: Destination Amenities Table');
-        $this->call(DestinationAmenitiesTableSeeder::class);
-
+        
         $this->command->info('Seeding: Properties Table');
         $this->call(PropertiesTableSeeder::class);
 
+        $this->command->info('Seeding: Property Amenities Table');
+        $this->call(PropertyAmenitiesTableSeeder::class);
+
         $this->command->info('Seeding: Property Images Table');
         $this->call(PropertyImagesTableSeeder::class);
+
+        $this->command->info('Seeding: Property Availability Table');
+        $this->call(PropertyAvailabilitySeeder::class);
 
         $end = Carbon::now();
 

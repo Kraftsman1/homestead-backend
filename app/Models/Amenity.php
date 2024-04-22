@@ -29,12 +29,12 @@ class Amenity extends Model
     ];
 
     /**
-     * Get the destinations for the amenity.
+     * Get the properties for the amenity.
      */
-
-    public function destinations()
+    public function properties()
     {
-        return $this->belongsToMany(Destination::class);
+        return $this->belongsToMany(Property::class, 'property_amenities');
     }
+
 
 }

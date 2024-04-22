@@ -27,28 +27,35 @@ class Property extends Model
 
         'name',
         'description',
-        'type',
+        'property_type',
         'price',
         'bedrooms',
         'bathrooms',
+        'max_guests',
         'address',
         'city_id',
         'region_id',
         'country_id',
-        'destination_id',
         'latitude',
         'longitude',
 
     ];
+
+    /**
+     * Get the host that owns the property.
+     */
+    public function host()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     
     /*
     * Get the destination that owns the property.
     */
-
-    public function destination()
-    {
-        return $this->belongsTo(Destination::class);
-    }
+    // public function destination()
+    // {
+    //     return $this->belongsTo(Destination::class);
+    // }
 
     /*
     * Get the images for the property.
@@ -57,6 +64,26 @@ class Property extends Model
     public function images()
     {
         return $this->hasMany(PropertyImage::class);
+    }
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'property_amenities');
+    }
+
+    public function availability()
+    {
+        return $this->hasMany(PropertyAvailability::class);
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'property_id', 'user_id');
+    }
+
+    public function getFormattedPrice()
+    {
+        return 'GHC ' . number_format($this->price, 2);
     }
 
 }

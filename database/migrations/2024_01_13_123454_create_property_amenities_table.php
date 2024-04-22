@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDestinationImagesTable extends Migration
+class CreatePropertyAmenitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateDestinationImagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('destination_images', function (Blueprint $table) {
+        Schema::create('property_amenities', function (Blueprint $table) {
             $table->id();
-            $table -> foreignId('destination_id') -> constrained('destinations');
-            $table -> string('image_url');
+            $table->unsignedInteger('property_id');
+            $table->unsignedInteger('amenity_id');
             $table->timestamps();
         });
+
     }
 
     /**
@@ -28,6 +29,6 @@ class CreateDestinationImagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('destination_images');
+        Schema::dropIfExists('property_amenities');
     }
 }

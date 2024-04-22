@@ -16,18 +16,22 @@ class CreatePropertiesTable extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table -> string('name');
-            $table -> string('description');
-            $table -> string('type');
-            $table -> integer('price');
-            $table -> integer('bedrooms');
-            $table -> integer('bathrooms');
+            $table -> text('description');
+            $table -> string('property_type');
+            $table -> decimal('price', 10, 2);
+            $table -> tinyInteger('bedrooms');
+            $table -> tinyInteger('bathrooms');
+            $table -> unsignedTinyInteger('max_guests');
+            // $table -> unsignedBigInteger('user_id');
+            // $table -> foreign('user_id')->references('id')->on('users');
             $table -> string('address');
             $table -> foreignId('city_id') -> constrained('cities');
             $table -> foreignId('region_id') -> constrained('regions');
             $table -> foreignId('country_id') -> constrained('countries');
-            $table -> foreignId('destination_id') -> constrained('destinations');
-            $table -> string('latitude');
-            $table -> string('longitude');
+
+            $table -> decimal('latitude', 11, 8);
+            $table -> decimal('longitude', 11, 8);
+
             $table->timestamps();
         });
     }
