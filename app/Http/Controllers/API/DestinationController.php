@@ -7,6 +7,8 @@ use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 
 class DestinationController extends Controller
 {

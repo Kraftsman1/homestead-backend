@@ -41,6 +41,32 @@ class Property extends Model
 
     ];
 
+    protected $dates = ['deleted_at'];
+
+    /**
+     * Get the city that owns the property.
+     */
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    /**
+     * Get the region that owns the property.
+     */
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    /**
+     * Get the country that owns the property.
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
     /**
      * Get the host that owns the property.
      */

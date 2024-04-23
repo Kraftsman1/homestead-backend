@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\DestinationController;
+use App\Http\Controllers\API\PropertyController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\HomeController;
 
@@ -57,14 +57,28 @@ Route::prefix('v1')->group(function () {
     });
 
     // Destinations Routes
+    // Route::group([
+    //     'prefix' => 'destinations',
+    //     // middleware
+    //     'middleware' => [JSONResponse::class]
+    // ], function () {
+    //     Route::get('/', [DestinationController::class, 'index']);
+    //     Route::get('/{id}', [DestinationController::class, 'show']);
+    //     Route::post('/{id}/favorite', [DestinationController::class, 'favorite'])->middleware('auth:sanctum');
+
+    //     // Route::post('/', [DestinationController::class, 'store']);
+    //     // Route::put('/{id}', [DestinationController::class, 'update']);
+    //     // Route::delete('/{id}', [DestinationController::class, 'destroy']);
+    // });
+
     Route::group([
-        'prefix' => 'destinations',
+        'prefix' => 'properties',
         // middleware
         'middleware' => [JSONResponse::class]
     ], function () {
-        Route::get('/', [DestinationController::class, 'index']);
-        Route::get('/{id}', [DestinationController::class, 'show']);
-        Route::post('/{id}/favorite', [DestinationController::class, 'favorite'])->middleware('auth:sanctum');
+        Route::get('/', [PropertyController::class, 'index']);
+        Route::get('/{id}', [PropertyController::class, 'show']);
+        Route::post('/{id}/favorite', [PropertyController::class, 'favorite'])->middleware('auth:sanctum');
 
         // Route::post('/', [DestinationController::class, 'store']);
         // Route::put('/{id}', [DestinationController::class, 'update']);
