@@ -22,7 +22,6 @@ class AuthController extends Controller
      *
      * @throws JsonValidationException If validation fails.
      */
-
     public function signup(UserSignUpRequest $request)
     {
         try {
@@ -99,12 +98,12 @@ class AuthController extends Controller
                 'message' => 'Successfully logged in!',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'role' => $user->role,
                 'user' => [
                     'id' => $user->id,
                     'firstname' => $user->firstname,
                     'lastname' => $user->lastname,
                     'email' => $user->email,
+                    'role' => $user->role,
                 ]
             ];
     

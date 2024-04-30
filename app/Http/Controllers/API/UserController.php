@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\ProfilePicture;
 use Illuminate\Http\Request;
@@ -120,11 +119,11 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function change_password(ChangePasswordRequest $request)
+    public function change_password(Request $request)
     {
         try {
             $user = Auth::user();
-            $validated = $request->validated();
+            $validated = $request->all();
 
             if (!Hash::check($validated['old_password'], $user->password)) {
                 return response()->json([
@@ -140,6 +139,40 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Password changed successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e);
+        }
+    }
+
+    /**
+     * Get authenticated user favorite properties.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function favorites(Request $request)
+    {
+        try {
+            // Get authenticated user
+            $user = Auth::user();
+
+            // Check if user has favorite properties
+            if ($user->favorites->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No favorited properties found.'
+                ], 200);
+            }
+
+            // Get user favorite properties
+            $favorites = $user->favorites;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Favorites retrieved successfully.',
+                'data' => $favorites,
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e);

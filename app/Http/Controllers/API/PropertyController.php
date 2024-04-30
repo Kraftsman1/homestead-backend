@@ -6,28 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Exception;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class PropertyController extends Controller
 {
-
     /**
      * Get all properties.
      *
      * @param GetPropertiesRequest $request Validated request data.
      *
      * @return JsonResponse
-     *
      */
     public function index(Request $request)
     {
         try {
-
             // Start building the query to retrieve all properties
-            $query = Property::query();
-
-            $query->with('city', 'region', 'country');
+            $query = Property::query()->with('city', 'region', 'country', 'images');	
 
             // Execute the query to retrieve properties
             $properties = $query->get();
@@ -46,11 +41,17 @@ class PropertyController extends Controller
 
             $properties = $query->paginate($limit, ['id', 'name', 'price', 'bedrooms', 'bathrooms', 'city_id', 'region_id', 'country_id'], 'page', $currentPage);
 
+            $preformattedProperties = $properties->map(function ($property) {
+                $property->banner_image = $property->images->first();
+                unset($property->images);
+                return $property;
+            });
+
             // Return JSON response with properties data
             return response()->json([
                 'success' => true,
                 'message' => 'All properties retrieved successfully.',
-                'data' => $properties,
+                'data' => $preformattedProperties,
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e);
@@ -68,7 +69,7 @@ class PropertyController extends Controller
     {
         try {
             // Retrieve the property by ID
-            $property = Property::with('city', 'region', 'country')->find($id);
+            $property = Property::with('city', 'region', 'country', 'images')->find($id);
 
             // Check if property exists
             if (!$property) {
@@ -99,25 +100,24 @@ class PropertyController extends Controller
     public function favorite(Request $request, $id)
     {
         try {
-
             // Get the authenticated user
             $user = Auth::user();
 
             // Get property by ID
-            $property = Property::find($id);
+            $property = Property::findOrFail($id);
 
             // Get the 'favorited' flag from the request
             $isFavorited = $request->boolean('favorited') ?? false;
 
             if ($isFavorited) {
                 // favorite the property
-                if(!$user->favoriteProperties->contains($property)) {
+                if (!$user->favorites->contains($property)) {
                     $user->favorites()->attach($property);
                 }
                 $message = 'Property favorited successfully.';
             } else {
                 // unfavorite the property
-                if($user->favorites->contains($property)) {
+                if ($user->favorites->contains($property)) {
                     $user->favorites()->detach($property);
                 }
                 $message = 'Property unfavorited successfully.';
@@ -131,12 +131,10 @@ class PropertyController extends Controller
                     'favorited' => $isFavorited,
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
     }
-
 
     /**
      * Handle errors and return JSON response.
@@ -147,9 +145,10 @@ class PropertyController extends Controller
      */
     private function handleError($e)
     {
-        Log::error($e);
+        Log::error($e->getMessage());
         return response()->json([
-            'message' => 'Internal server error',
+            'success' => false,
+            'message' => 'An unexpected error occurred. Please try again later.',
         ], 500);
     }
 }
