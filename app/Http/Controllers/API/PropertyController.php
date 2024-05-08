@@ -51,7 +51,7 @@ class PropertyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'All properties retrieved successfully.',
-                'data' => $preformattedProperties,
+                'data' => $properties,
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e);
