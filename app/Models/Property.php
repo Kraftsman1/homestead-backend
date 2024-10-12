@@ -27,7 +27,6 @@ class Property extends Model
 
         'name',
         'description',
-        'property_type',
         'price',
         'bedrooms',
         'bathrooms',
@@ -42,6 +41,11 @@ class Property extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function property_type()
+    {
+        return $this->belongsTo(PropertyType::class);
+    }
 
     /**
      * Get the city that owns the property.
@@ -74,14 +78,6 @@ class Property extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
-    /*
-    * Get the destination that owns the property.
-    */
-    // public function destination()
-    // {
-    //     return $this->belongsTo(Destination::class);
-    // }
 
     /*
     * Get the images for the property.
