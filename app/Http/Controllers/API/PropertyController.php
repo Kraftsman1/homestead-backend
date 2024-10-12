@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;
+use App\Http\Requests\PropertyListingRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Exception;
@@ -69,7 +70,7 @@ class PropertyController extends Controller
     {
         try {
             // Retrieve the property by ID
-            $property = Property::with('city', 'region', 'country', 'images')->find($id);
+            $property = Property::with('city', 'region', 'country', 'images', 'amenities')->find($id);
 
             // Check if property exists
             if (!$property) {
@@ -85,6 +86,61 @@ class PropertyController extends Controller
                 'message' => 'Property retrieved successfully.',
                 'data' => $property,
             ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e);
+        }
+    }
+    
+    /**
+     * Store a new property.
+     *
+     * @param PropertyListingRequest $request Validated request data.
+     *
+     * @return JsonResponse
+     */
+    public function store(PropertyListingRequest $request)
+    {
+        try {
+            // Get the authenticated user
+            $user = Auth::user();
+
+            // Get validated request data
+            $validated = $request->all();
+
+            // Create a new property
+            $property = Property::create($validated);
+
+            // Handle images upload to aws s3
+            if ($request->hasFile('images')) {
+                $images = $request->file('images');
+
+                foreach ($images as $image) {
+                    $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+
+                    // Upload and store the image in the 'property_images' directory on s3
+                    $path = $image->storeAs('property_images', $filename, 's3');
+
+                    // Create a new image record in the database
+                    $property->images()->create([
+                        'property_id' => $property->id,
+                        'image_url' => $path,
+                    ]);
+                    
+                }
+
+                // Set the first image as the banner image
+                $property->banner_image = $property->images->first()->image_url;
+
+                // Save the property
+                $property->save();
+            }
+
+            // Return JSON response with property data
+            return response()->json([
+                'success' => true,
+                'message' => 'Property created successfully.',
+                'data' => $property,
+            ], 201);
         } catch (\Exception $e) {
             return $this->handleError($e);
         }
