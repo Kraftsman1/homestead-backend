@@ -40,6 +40,9 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Seeding: Amenities Table');
         $this->call(AmenitiesTableSeeder::class);
+
+        $this->command->info('Seeding: Property Types Table');	
+        $this->call(PropertyTypeTableSeeder::class);
         
         $this->command->info('Seeding: Properties Table');
         $this->call(PropertiesTableSeeder::class);
