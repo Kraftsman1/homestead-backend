@@ -27,6 +27,7 @@ class User extends Authenticatable
         'gender',
         // 'ip_address',
         'role',
+        'is_host'
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_hosts' => 'boolean'
     ];
 
     /**
@@ -54,6 +56,14 @@ class User extends Authenticatable
     public function profilePicture()
     {
         return $this->hasOne(ProfilePicture::class);
+    }
+    
+    /**
+     * Get user properties
+     */
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
     }
     
     /**

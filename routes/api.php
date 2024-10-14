@@ -4,8 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PropertyController;
+use App\Http\Controllers\API\PropertyTypeController;
+use App\Http\Controllers\API\HostController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\HomeController;
+use App\Http\Controllers\API\AmenityController;
 
 use App\Http\Middleware\JSONResponse;
 
@@ -78,11 +81,23 @@ Route::prefix('v1')->group(function () {
     ], function () {
         Route::get('/', [PropertyController::class, 'index']);
         Route::get('/{id}', [PropertyController::class, 'show']);
+        Route::post('/', [PropertyController::class, 'store'])->middleware('auth:sanctum');
         Route::post('/{id}/favorite', [PropertyController::class, 'favorite'])->middleware('auth:sanctum');
 
         // Route::post('/', [DestinationController::class, 'store']);
         // Route::put('/{id}', [DestinationController::class, 'update']);
         // Route::delete('/{id}', [DestinationController::class, 'destroy']);
+    });
+
+    // Become a Host 
+    Route::group([
+        'prefix' => 'host',
+        // middleware
+        'middleware' => [JSONResponse::class]
+    ], function () {
+        Route::post('/become-a-host', [HostController::class, 'apply'])->middleware('auth:sanctum');
+        // Route::post('/approve', [HostController::class, 'approve'])->middleware('auth:sanctum');
+        // Route::post('/reject', [HostController::class, 'reject'])->middleware('auth:sanctum');
     });
 
     // // Admin Routes
@@ -92,6 +107,30 @@ Route::prefix('v1')->group(function () {
     // ], function() {
     //     // Add your admin routes here
     // });
+
+    Route::group([
+        'prefix' => 'property-types',
+        // middleware
+        'middleware' => [JSONResponse::class]
+    ], function () {
+        Route::get('/', [PropertyTypeController::class, 'index']);
+        Route::get('/{id}', [PropertyTypeController::class, 'show']);
+        Route::post('/', [PropertyTypeController::class, 'store']);
+        Route::put('/{id}', [PropertyTypeController::class, 'update']);
+    });
+
+    // Amenities Routes
+    Route::group([
+        'prefix' => 'amenities',
+        // middleware
+        'middleware' => [JSONResponse::class]
+    ], function () {
+        Route::get('/', [AmenityController::class, 'index']);
+        Route::get('/{id}', [AmenityController::class, 'show']);
+        Route::post('/', [AmenityController::class, 'store']);
+        Route::put('/{id}', [AmenityController::class, 'update']);
+    });
+    
     
     // User Routes
     Route::group([
@@ -100,7 +139,7 @@ Route::prefix('v1')->group(function () {
     ], function() {
         // Add user routes here
         Route::get('/', [UserController::class, 'index']);
-        Route::put('/profile', [UserController::class, 'update']);
+        Route::put('/update-user', [UserController::class, 'update']);
         Route::post('/profile-picture', [UserController::class, 'update_profile_picture']);
         Route::post('/change-password', [UserController::class, 'change_password']);
         Route::get('/favorites', [UserController::class, 'favorites']);

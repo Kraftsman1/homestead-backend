@@ -116,5 +116,26 @@ class AuthController extends Controller
             ], 422);
         }
     }
+
+
+    /**
+     * Logout User
+     *
+     * @return JsonResponse
+     */
+    public function logout()
+    {
+        try {
+            auth()->user()->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Successfully logged out!',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An unexpected error occurred while logging out. Please try again later.',
+            ], 500);
+        }
+    }
     
 }
